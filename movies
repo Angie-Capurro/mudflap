@@ -1,0 +1,32 @@
+WITH MovieGenreCounts AS (
+    SELECT 
+        gm.movie_id,
+        COUNT(gm.genre_id) AS genre_count
+    FROM 
+        genres_movies gm
+    GROUP BY 
+        gm.movie_id
+),
+GenreStats AS (
+    SELECT 
+        g.name AS genre_name,
+        COUNT(DISTINCT gm.movie_id) AS movie_count,
+        AVG(mgc.genre_count) AS avg_genre_count,  
+        MAX(mgc.genre_count) AS max_genre_count   
+    FROM 
+        genres g
+    JOIN 
+        genres_movies gm ON g.id = gm.genre_id
+    JOIN 
+        MovieGenreCounts mgc ON gm.movie_id = mgc.movie_id
+    GROUP BY 
+        g.name
+)
+SELECT 
+    genre_name,
+    avg_genre_count,
+    max_genre_count
+FROM 
+    GenreStats
+ORDER BY 
+    avg_genre_count DESC;
